@@ -36,13 +36,15 @@ def parse_args():
         "--log_path",
         type=str,
         default="test",
-        help="the path saving model.t7 and the training process, the name of folder will be log/(current time)",
+        help="the path saving model.t7 and the training process, "
+        "the name of folder will be log/(current time)",
     )
     parser.add_argument(
         "--data_path",
         type=str,
         default="../dataset/data/tmp/",
-        help="data set folder, for default format see dataset/cora/cora.edges and cora.node_labels",
+        help="data set folder, for default format see "
+        "dataset/cora/cora.edges and cora.node_labels",
     )
     parser.add_argument(
         "--dataset",
@@ -105,7 +107,7 @@ def main(args):
 
     date_time = datetime.now().strftime("%m-%d-%H:%M:%S")
     log_path = os.path.join(args.log_root, args.log_path, args.save_name, date_time)
-    if os.path.isdir(log_path) == False:
+    if os.path.isdir(log_path) is False:
         try:
             os.makedirs(log_path)
         except FileExistsError:
@@ -352,7 +354,7 @@ if __name__ == "__main__":
     )
     args.log_path = os.path.join(args.log_path, args.method_name, args.dataset)
 
-    if os.path.isdir(dir_name) == False:
+    if os.path.isdir(dir_name) is False:
         try:
             os.makedirs(dir_name)
         except FileExistsError:

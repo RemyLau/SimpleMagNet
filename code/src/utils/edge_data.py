@@ -85,7 +85,8 @@ def label_pairs_gen(pos, neg):
 
 
 def generate_dataset_2class(edge_index, splits=10, test_prob=0.6):
-    # this function doesn't consider the connectivity during removing edges for validation/testing
+    # this function doesn't consider the connectivity during
+    # removing edges for validation/testing
     from torch_geometric.utils import to_undirected
 
     datasets = {}
@@ -265,7 +266,8 @@ def generate_dataset_3class(
         return d_results
 
     row, col = edge_index[0], edge_index[1]
-    # adj = coo_matrix((np.ones(len(row)), (row, col)), shape=(size, size), dtype=np.float32).tocsr()
+    # adj = coo_matrix((np.ones(len(row)), (row, col)), shape=(size, size),
+    #                  dtype=np.float32).tocsr()
     # A_dense = np.array(adj.todense())
     # undirected_num = int((np.sum(A_dense * A_dense.T) + np.trace(A_dense > 0))/2)
     # edge_num = np.sum(A_dense)
@@ -394,13 +396,13 @@ def generate_dataset_3class(
         split = list(ind.keys())[0]
         d_results[split] = ind[split]
 
-    if os.path.isdir(save_path) == False:
+    if os.path.isdir(save_path) is False:
         try:
             os.makedirs(save_path)
         except FileExistsError:
             print("Folder exists!")
 
-    if os.path.exists(save_file) == False:
+    if os.path.exists(save_file) is False:
         try:
             pk.dump(d_results, open(save_file, "wb"), protocol=pk.HIGHEST_PROTOCOL)
         except FileExistsError:
@@ -463,7 +465,8 @@ def get_appr_directed_adj(alpha, edge_index, num_nodes, dtype, edge_weight=None)
     p_ppr = p_dense
     pi = pi / pi.sum()  # norm pi
 
-    # Note that by scaling the vectors, even the sign can change. That's why positive and negative elements might get flipped.
+    # Note that by scaling the vectors, even the sign can change.
+    # That's why positive and negative elements might get flipped.
     assert len(pi[pi < 0]) == 0
 
     pi_inv_sqrt = pi.pow(-0.5)
@@ -597,8 +600,10 @@ def link_prediction_evaluation(out_val, out_test, y_val, y_test):
     r"""Evaluates link prediction results.
 
     Args:
-        out_val: (torch.FloatTensor) Log probabilities of validation edge output, with 2 or 3 columns.
-        out_test: (torch.FloatTensor) Log probabilities of test edge output, with 2 or 3 columns.
+        out_val: (torch.FloatTensor) Log probabilities of validation edge output,
+            with 2 or 3 columns.
+        out_test: (torch.FloatTensor) Log probabilities of test edge output,
+            with 2 or 3 columns.
         y_val: (torch.LongTensor) Validation edge labels (with 2 or 3 possible values).
         y_test: (torch.LongTensor) Test edge labels (with 2 or 3 possible values).
 

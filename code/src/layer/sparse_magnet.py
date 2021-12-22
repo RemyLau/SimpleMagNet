@@ -96,7 +96,7 @@ class complex_relu_layer(nn.Module):
     def forward(self, real, img=None):
         # for torch nn sequential usage
         # in this case, x_real is a tuple of (real, img)
-        if img == None:
+        if img is None:
             img = real[1]
             real = real[0]
 
@@ -137,7 +137,7 @@ class MagNet(nn.Module):
         ]
         chebs.append(activation_func())
 
-        for i in range(1, layer):
+        for _ in range(1, layer):
             chebs.append(
                 MagConv(
                     in_c=num_filter,
@@ -196,7 +196,7 @@ class MagNet_Edge(nn.Module):
         ]
         chebs.append(activation_func())
 
-        for i in range(1, layer):
+        for _ in range(1, layer):
             chebs.append(
                 MagConv(
                     in_c=num_filter,

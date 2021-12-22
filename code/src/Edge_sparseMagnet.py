@@ -38,13 +38,15 @@ def parse_args():
         "--log_path",
         type=str,
         default="test",
-        help="the path saving model.t7 and the training process, the name of folder will be log/(current time)",
+        help="the path saving model.t7 and the training process, "
+        "the name of folder will be log/(current time)",
     )
     parser.add_argument(
         "--data_path",
         type=str,
         default="../dataset/data/tmp/",
-        help="data set folder, for default format see dataset/cora/cora.edges and cora.node_labels",
+        help="data set folder, for default format see "
+        "dataset/cora/cora.edges and cora.node_labels",
     )
     parser.add_argument(
         "--dataset",
@@ -57,7 +59,8 @@ def parse_args():
         "--split_prob",
         type=lambda s: [float(item) for item in s.split(",")],
         default="0.15,0.05",
-        help="random drop for testing/validation/training edges (for 3-class classification only)",
+        help="random drop for testing/validation/training edges "
+        "(for 3-class classification only)",
     )
     parser.add_argument(
         "--task",
@@ -152,7 +155,7 @@ def main(args):
     else:
         dataset = load_syn(args.data_path + args.dataset, None)
 
-    if os.path.isdir(log_path) == False:
+    if os.path.isdir(log_path) is False:
         os.makedirs(log_path)
 
     # load dataset
@@ -445,7 +448,7 @@ if __name__ == "__main__":
         args.dataset + "/",
     )
 
-    if os.path.isdir(dir_name) == False:
+    if os.path.isdir(dir_name) is False:
         try:
             os.makedirs(dir_name)
         except FileExistsError:
