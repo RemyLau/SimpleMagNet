@@ -322,14 +322,9 @@ def main(args):
         # Save testing results
         ####################
         logstr = (
-            "val_acc: "
-            + str(np.round(acc_train, 3))
-            + " test_acc: "
-            + str(np.round(acc_test, 3))
-            + " val_acc_latest: "
-            + str(np.round(acc_train_latest, 3))
-            + " test_acc_latest: "
-            + str(np.round(acc_test_latest, 3))
+            f"val_acc: {acc_train:5.3f}, test_acc: {acc_test:5.3f}, "
+            f"val_acc_latest: {acc_train_latest:5.3f}, "
+            f"test_acc_latest: {acc_test_latest:5.3f}"
         )
         print(logstr)
         results[split] = [acc_train, acc_test, acc_train_latest, acc_test_latest]
