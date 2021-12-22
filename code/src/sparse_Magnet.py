@@ -9,6 +9,7 @@ from collections import Counter
 import torch.nn.functional as F
 from torch_sparse import SparseTensor
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch_geometric.datasets import WebKB, WikipediaNetwork, WikiCS
 
@@ -190,22 +191,16 @@ def main(args):
             ####################
             # Train
             ####################
-            count, train_loss, train_acc = 0.0, 0.0, 0.0
+            train_loss = train_acc = 0.0
 
             # for loop for batch loading
-            count += np.sum(train_index)
-
             model.train()
             preds = model(X_real, X_img)
             train_loss = criterion(preds[:, :, train_index], label[:, train_index])
             pred_label = preds.max(dim=1)[1]
-            train_acc = (
-                1.0
-                * ((pred_label[:, train_index] == label[:, train_index]))
-                .sum()
-                .detach()
-                .item()
-                / count
+            train_acc = accuracy_score(
+                label[:, train_index].cpu().detach().numpy()[0],
+                pred_label[:, train_index].cpu().detach().numpy()[0],
             )
             opt.zero_grad()
             train_loss.backward()
@@ -220,21 +215,16 @@ def main(args):
             # Validation
             ####################
             model.eval()
-            count, test_loss, test_acc = 0.0, 0.0, 0.0
+            test_loss = test_acc = 0.0
 
             # for loop for batch loading
-            count += np.sum(val_index)
             preds = model(X_real, X_img)
             pred_label = preds.max(dim=1)[1]
 
             test_loss = criterion(preds[:, :, val_index], label[:, val_index])
-            test_acc = (
-                1.0
-                * ((pred_label[:, val_index] == label[:, val_index]))
-                .sum()
-                .detach()
-                .item()
-                / count
+            test_acc = accuracy_score(
+                label[:, val_index].cpu().detach().numpy()[0],
+                pred_label[:, val_index].cpu().detach().numpy()[0],
             )
 
             outstrval = " Test loss:, %.6f, acc:, %.3f," % (
@@ -280,20 +270,15 @@ def main(args):
         pred_label = preds.max(dim=1)[1]
         np.save(log_path + "/pred" + str(split), pred_label.to("cpu"))
 
-        count = np.sum(val_index)
-        acc_train = (
-            1.0
-            * ((pred_label[:, val_index] == label[:, val_index])).sum().detach().item()
-        ) / count
+        acc_train = accuracy_score(
+            label[:, val_index].cpu().detach().numpy()[0],
+            pred_label[:, val_index].cpu().detach().numpy()[0],
+        )
 
-        count = np.sum(test_index)
-        acc_test = (
-            1.0
-            * ((pred_label[:, test_index] == label[:, test_index]))
-            .sum()
-            .detach()
-            .item()
-        ) / count
+        acc_test = accuracy_score(
+            label[:, test_index].cpu().detach().numpy()[0],
+            pred_label[:, test_index].cpu().detach().numpy()[0],
+        )
 
         model.load_state_dict(
             torch.load(log_path + "/model_latest" + str(split) + ".t7"),
@@ -303,20 +288,15 @@ def main(args):
         pred_label = preds.max(dim=1)[1]
         np.save(log_path + "/pred_latest" + str(split), pred_label.to("cpu"))
 
-        count = np.sum(val_index)
-        acc_train_latest = (
-            1.0
-            * ((pred_label[:, val_index] == label[:, val_index])).sum().detach().item()
-        ) / count
+        acc_train_latest = accuracy_score(
+            label[:, val_index].cpu().detach().numpy()[0],
+            pred_label[:, val_index].cpu().detach().numpy()[0],
+        )
 
-        count = np.sum(test_index)
-        acc_test_latest = (
-            1.0
-            * ((pred_label[:, test_index] == label[:, test_index]))
-            .sum()
-            .detach()
-            .item()
-        ) / count
+        acc_test_latest = accuracy_score(
+            label[:, test_index].cpu().detach().numpy()[0],
+            pred_label[:, test_index].cpu().detach().numpy()[0],
+        )
 
         ####################
         # Save testing results
