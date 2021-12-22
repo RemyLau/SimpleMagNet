@@ -26,32 +26,39 @@ device = torch.device("cuda:%d" % cuda_device if torch.cuda.is_available() else 
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="MagNet Conv (sparse version)")
+    parser = argparse.ArgumentParser(
+        description="MagNet Conv (sparse version)",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
     parser.add_argument(
         "--log_root",
         type=str,
         default="../logs/",
-        help="the path saving model.t7 and the training process",
+        help="The path saving model.t7 and the training process",
     )
+
     parser.add_argument(
         "--log_path",
         type=str,
         default="test",
-        help="the path saving model.t7 and the training process, "
+        help="The path saving model.t7 and the training process, "
         "the name of folder will be log/(current time)",
     )
+
     parser.add_argument(
         "--data_path",
         type=str,
         default="../dataset/data/tmp/",
-        help="data set folder, for default format see "
+        help="Data set folder, for default format see "
         "dataset/cora/cora.edges and cora.node_labels",
     )
+
     parser.add_argument(
         "--dataset",
         type=str,
         default="WebKB/Cornell",
-        help="data set selection",
+        help="Data set selection",
     )
 
     parser.add_argument(
@@ -60,34 +67,77 @@ def parse_args():
         default=3000,
         help="Number of (maximal) training epochs.",
     )
+
     parser.add_argument(
         "--q",
         type=float,
         default=0.25,
         help="q value for the phase matrix",
     )
-    parser.add_argument("--method_name", type=str, default="Magnet", help="method name")
 
-    parser.add_argument("--K", type=int, default=1, help="K for cheb series")
+    parser.add_argument(
+        "--method_name",
+        type=str,
+        default="Magnet",
+        help="method name",
+    )
+
+    parser.add_argument(
+        "--K",
+        type=int,
+        default=1,
+        help="K for cheb series",
+    )
+
     parser.add_argument(
         "--layer",
         type=int,
         default=2,
         help="How many layers of gcn in the model, default 2 layers.",
     )
-    parser.add_argument("--dropout", type=float, default=0.5, help="dropout prob")
 
-    parser.add_argument("--debug", "-D", action="store_true", help="debug mode")
-    parser.add_argument("--lr", type=float, default=5e-3, help="learning rate")
-    parser.add_argument("--l2", type=float, default=5e-4, help="l2 regularizer")
+    parser.add_argument(
+        "--dropout",
+        type=float,
+        default=0.5,
+        help="dropout prob",
+    )
 
-    parser.add_argument("--num_filter", type=int, default=16, help="num of filters")
+    parser.add_argument(
+        "--debug",
+        "-D",
+        action="store_true",
+        help="Debug mode",
+    )
+
+    parser.add_argument(
+        "--lr",
+        type=float,
+        default=5e-3,
+        help="Learning rate",
+    )
+
+    parser.add_argument(
+        "--l2",
+        type=float,
+        default=5e-4,
+        help="l2 regularizer",
+    )
+
+    parser.add_argument(
+        "--num_filter",
+        type=int,
+        default=16,
+        help="Number of filters",
+    )
+
     parser.add_argument(
         "--randomseed",
         type=int,
         default=3407,
-        help="if set random seed in training",
+        help="Set random seed in training",
     )
+
     return parser.parse_args()
 
 

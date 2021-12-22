@@ -27,27 +27,34 @@ device = torch.device("cuda:%d" % cuda_device if torch.cuda.is_available() else 
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="link prediction of MagNet")
+    parser = argparse.ArgumentParser(
+        description="link prediction of MagNet",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
     parser.add_argument(
         "--log_root",
         type=str,
         default="../logs/",
-        help="the path saving model.t7 and the training process",
+        help="The path saving model.t7 and the training process",
     )
+
     parser.add_argument(
         "--log_path",
         type=str,
         default="test",
-        help="the path saving model.t7 and the training process, "
+        help="The path saving model.t7 and the training process, "
         "the name of folder will be log/(current time)",
     )
+
     parser.add_argument(
         "--data_path",
         type=str,
         default="../dataset/data/tmp/",
-        help="data set folder, for default format see "
+        help="Data set folder, for default format see "
         "dataset/cora/cora.edges and cora.node_labels",
     )
+
     parser.add_argument(
         "--dataset",
         type=str,
@@ -62,6 +69,7 @@ def parse_args():
         help="random drop for testing/validation/training edges "
         "(for 3-class classification only)",
     )
+
     parser.add_argument(
         "--task",
         type=int,
@@ -69,20 +77,32 @@ def parse_args():
         help="2: 2-class classification 3: 3-class classification",
     )
 
-    parser.add_argument("--epochs", type=int, default=1500, help="training epochs")
-    parser.add_argument("--num_filter", type=int, default=4, help="num of filters")
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=1500,
+        help="Training epochs",
+    )
+
+    parser.add_argument(
+        "--num_filter",
+        type=int,
+        default=4,
+        help="Num of filters",
+    )
+
     parser.add_argument(
         "-not_norm",
         "-n",
         action="store_false",
-        help="if use normalized laplacian or not, default: yes",
+        help="If use normalized laplacian or not, default: yes",
     )
 
     parser.add_argument(
         "--method_name",
         type=str,
         default="MagNet_Edge",
-        help="method name",
+        help="Method name",
     )
 
     parser.add_argument(
@@ -91,25 +111,56 @@ def parse_args():
         default=0,
         help="q value for the phase matrix",
     )
-    parser.add_argument("--K", type=int, default=1, help="K for cheb series")
+
+    parser.add_argument(
+        "--K",
+        type=int,
+        default=1,
+        help="K for cheb series",
+    )
+
     parser.add_argument(
         "--layer",
         type=int,
         default=2,
-        help="how many layers of gcn in the model, only 1 or 2 layers.",
+        help="How many layers of gcn in the model, only 1 or 2 layers.",
     )
 
-    parser.add_argument("--dropout", type=float, default=0.5, help="dropout prob")
-    parser.add_argument("--debug", "-D", action="store_true", help="debug mode")
+    parser.add_argument(
+        "--dropout",
+        type=float,
+        default=0.5,
+        help="Dropout prob",
+    )
+
+    parser.add_argument(
+        "--debug",
+        "-D",
+        action="store_true",
+        help="Debug mode",
+    )
+
     parser.add_argument(
         "--num_class_link",
         type=int,
         default=2,
-        help="number of classes for link direction prediction(2 or 3).",
+        help="Number of classes for link direction prediction(2 or 3).",
     )
 
-    parser.add_argument("--lr", type=float, default=1e-3, help="learning rate")
-    parser.add_argument("--l2", type=float, default=5e-4, help="l2 regularizer")
+    parser.add_argument(
+        "--lr",
+        type=float,
+        default=1e-3,
+        help="Learning rate",
+    )
+
+    parser.add_argument(
+        "--l2",
+        type=float,
+        default=5e-4,
+        help="l2 regularizer",
+    )
+
     return parser.parse_args()
 
 
