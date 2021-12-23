@@ -140,7 +140,15 @@ def parse_args():
         help="Set random seed in training",
     )
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    if args.debug:
+        args.epochs = 1
+
+    if args.randomseed > 0:
+        torch.manual_seed(args.randomseed)
+
+    return args
 
 
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
@@ -154,12 +162,7 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     return torch.sparse.FloatTensor(indices, values, shape)
 
 
-def main():
-    args = parse_args()
-
-    if args.debug:
-        args.epochs = 1
-
+def setup_paths(args):
     result_path = os.path.join(
         CUR_FILE_PATH,
         os.pardir,
@@ -168,11 +171,8 @@ def main():
         args.dataset,
     )
 
-    if os.path.isdir(result_path) is False:
-        try:
-            os.makedirs(result_path)
-        except FileExistsError:
-            print("Folder exists!")
+    if not os.path.isdir(result_path):
+        os.makedirs(result_path)
 
     save_name = (
         f"{args.method_name}"
@@ -183,25 +183,27 @@ def main():
         f"K{args.K}"
     )
 
-    if args.randomseed > 0:
-        torch.manual_seed(args.randomseed)
-
-    date_time = datetime.now().strftime("%m-%d-%H:%M:%S")
     log_path = os.path.join(
         args.log_root,
         args.log_path,
         args.method_name,
         args.dataset,
         save_name,
-        date_time,
+        datetime.now().strftime("%m-%d-%H:%M:%S"),
     )
-    if os.path.isdir(log_path) is False:
-        try:
-            os.makedirs(log_path)
-        except FileExistsError:
-            print("Folder exists!")
 
-    load_func, subset = args.dataset.split("/")[0], args.dataset.split("/")[1]
+    if not os.path.isdir(log_path):
+        os.makedirs(log_path)
+
+    return result_path, save_name, log_path
+
+
+def main():
+    args = parse_args()
+
+    result_path, save_name, log_path = setup_paths(args)
+
+    load_func, subset = args.dataset.split("/")[:2]
     if load_func == "WebKB":
         func = WebKB
     elif load_func == "cora_ml":
