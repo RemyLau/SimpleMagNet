@@ -20,9 +20,11 @@ from utils.preprocess import geometric_dataset_sparse, load_syn
 from utils.save_settings import write_log
 from utils.hermitian import hermitian_decomp_sparse
 
+CUR_FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+
 # select cuda device if available
 cuda_device = 0
-device = torch.device("cuda:%d" % cuda_device if torch.cuda.is_available() else "cpu")
+device = torch.device(f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu")
 
 
 def parse_args():
@@ -152,12 +154,47 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     return torch.sparse.FloatTensor(indices, values, shape)
 
 
-def main(args):
+def main():
+    args = parse_args()
+
+    if args.debug:
+        args.epochs = 1
+
+    result_path = os.path.join(
+        CUR_FILE_PATH,
+        os.pardir,
+        "result_arrays",
+        args.log_path,
+        args.dataset,
+    )
+
+    if os.path.isdir(result_path) is False:
+        try:
+            os.makedirs(result_path)
+        except FileExistsError:
+            print("Folder exists!")
+
+    save_name = (
+        f"{args.method_name}"
+        f"lr{int(1000*args.lr)}"
+        f"num_filters{args.num_filter}"
+        f"q{int(100*args.q)}"
+        f"layer{args.layer}"
+        f"K{args.K}"
+    )
+
     if args.randomseed > 0:
         torch.manual_seed(args.randomseed)
 
     date_time = datetime.now().strftime("%m-%d-%H:%M:%S")
-    log_path = os.path.join(args.log_root, args.log_path, args.save_name, date_time)
+    log_path = os.path.join(
+        args.log_root,
+        args.log_path,
+        args.method_name,
+        args.dataset,
+        save_name,
+        date_time,
+    )
     if os.path.isdir(log_path) is False:
         try:
             os.makedirs(log_path)
@@ -358,35 +395,11 @@ def main(args):
             file.write(log_str_full)
             file.write("\n")
         torch.cuda.empty_cache()
-    return results
+
+    # Save results
+    out_file = os.path.join(result_path, save_name)
+    np.save(out_file, results)
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    if args.debug:
-        args.epochs = 1
-
-    dir_name = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "../result_arrays",
-        args.log_path,
-        args.dataset + "/",
-    )
-    args.log_path = os.path.join(args.log_path, args.method_name, args.dataset)
-
-    if os.path.isdir(dir_name) is False:
-        try:
-            os.makedirs(dir_name)
-        except FileExistsError:
-            print("Folder exists!")
-    save_name = (
-        f"{args.method_name}"
-        f"lr{int(1000*args.lr)}"
-        f"num_filters{args.num_filter}"
-        f"q{int(100*args.q)}"
-        f"layer{args.layer}"
-        f"K{args.K}"
-    )
-    args.save_name = save_name
-    results = main(args)
-    np.save(dir_name + save_name, results)
+    main()
