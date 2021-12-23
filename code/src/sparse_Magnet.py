@@ -175,8 +175,7 @@ def main(args):
         func = load_syn
         args.data_path = args.data_path + "syn/" + subset
     else:
-        print("wrong dataset name !!!")
-        return
+        raise ValueError(f"Unrecognized dataset {dataset!r}")
 
     X, label, train_mask, val_mask, test_mask, L = geometric_dataset_sparse(
         args.q,
@@ -195,9 +194,9 @@ def main(args):
     # convert dense laplacian to sparse matrix
     L_img = []
     L_real = []
-    for i in range(len(L)):
-        L_img.append(sparse_mx_to_torch_sparse_tensor(L[i].imag).to(device))
-        L_real.append(sparse_mx_to_torch_sparse_tensor(L[i].real).to(device))
+    for i in L:
+        L_img.append(sparse_mx_to_torch_sparse_tensor(i.imag).to(device))
+        L_real.append(sparse_mx_to_torch_sparse_tensor(i.real).to(device))
 
     label = torch.from_numpy(_label_[np.newaxis]).to(device)
     X_img = torch.FloatTensor(X).to(device)
