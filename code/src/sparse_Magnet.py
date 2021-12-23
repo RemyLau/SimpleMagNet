@@ -253,12 +253,10 @@ def main(args):
             )
             opt.zero_grad()
             train_loss.backward()
+            train_loss_val = train_loss.detach().item()
             opt.step()
 
-            outstrtrain = "Train loss:, %.6f, acc:, %.3f," % (
-                train_loss.detach().item(),
-                train_acc,
-            )
+            outstrtrain = "Train loss:, {train_loss_val:8.6f}, acc:, {train_acc:5.3f},"
             # scheduler.step()
             ####################
             # Validation
@@ -271,15 +269,13 @@ def main(args):
             pred_label = preds.max(dim=1)[1]
 
             test_loss = criterion(preds[:, :, val_index], label[:, val_index])
+            test_loss_val = test_loss.detach().item()
             test_acc = accuracy_score(
                 label[:, val_index].cpu().detach().numpy()[0],
                 pred_label[:, val_index].cpu().detach().numpy()[0],
             )
 
-            outstrval = " Test loss:, %.6f, acc:, %.3f," % (
-                test_loss.detach().item(),
-                test_acc,
-            )
+            outstrval = " Test loss:, {test_loss_val:8.6f}, acc:, {test_acc:5.3f},"
 
             duration = "---, %.4f, seconds ---" % (time.time() - start_time)
             log_str = (
@@ -294,7 +290,7 @@ def main(args):
             ####################
             # Save weights
             ####################
-            save_perform = test_loss.detach().item()
+            save_perform = test_loss_val
             if save_perform <= best_test_err:
                 early_stopping = 0
                 best_test_err = save_perform
@@ -384,17 +380,12 @@ if __name__ == "__main__":
         except FileExistsError:
             print("Folder exists!")
     save_name = (
-        args.method_name
-        + "lr"
-        + str(int(args.lr * 1000))
-        + "num_filters"
-        + str(int(args.num_filter))
-        + "q"
-        + str(int(100 * args.q))
-        + "layer"
-        + str(int(args.layer))
-        + "K"
-        + str(int(args.K))
+        f"{args.method_name}"
+        f"lr{int(1000*args.lr)}"
+        f"num_filters{args.num_filter}"
+        f"q{int(100*args.q)}"
+        f"layer{args.layer}"
+        f"K{args.K}"
     )
     args.save_name = save_name
     results = main(args)
